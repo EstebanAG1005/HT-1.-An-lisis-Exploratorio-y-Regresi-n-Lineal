@@ -3,37 +3,59 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
-# Load the data into a pandas DataFrame
+# Se carga la data
 df = pd.read_csv("baseball.csv")
+
+# Remove comma from 'attendance' column
+df["attendance"] = (
+    df["attendance"].str.replace(",", "").str.replace("'", "").str.replace("]", "")
+)
+
+# Remove quotes from 'other_info_string' column
+df["other_info_string"] = df["other_info_string"].str.replace('"', "")
+
+# Remove quotes from 'other_info_string' column
+df["venue"] = df["venue"].str.replace(":", "")
+
+# Remove quotes from 'start_time' column
+df["start_time"] = df["start_time"].str.replace('"', "")
+
+# Remove any remaining HTML tags
+df["other_info_string"] = df["other_info_string"].str.replace("<.*?>", "")
+
 print(df)
-# Replace the comma in the number with an empty string and convert to float
-df = df.replace(["']", ",", ":"], "", regex=True).astype(float)
 
-# Split the data into input features (X) and target variable (y)
-X = df.iloc[:, :-1].values
-y = df.iloc[:, -1].values
+df.to_csv("New.csv", index=False)
 
-# Fit the linear regression model to the data
-reg = LinearRegression().fit(X, y)
 
-# Obtain the R2 score of the model
-y_pred = reg.predict(X)
-r2 = r2_score(y, y_pred)
-print("R2 score:", r2)
+# # Importamos el conjunto de datos
+# X = df.iloc[:, :-1].values
+# y = df.iloc[:, -1].values
 
-# Obtain the constants (intercept and coefficients) of the model
-intercept = reg.intercept_
-coeffs = reg.coef_
+# # Ajustar el modelo de regresión lineal a los datos que tenemos
+# reg = LinearRegression().fit(X, y)
 
-# Express the equation as a string
-equation = "y = "
-equation += str(intercept) + " + "
-for i, coeff in enumerate(coeffs):
-    equation += str(coeff) + " * X" + str(i) + " + "
-equation = equation[:-3]
-print("Equation:", equation)
+# # Calculo del parametro R2
+# y_pred = reg.predict(X)
+# r2 = r2_score(y, y_pred)
+# print("R2 score:", r2)
 
-# Predict the number of attendees given X and Y teams, day of the week, time, and state
-X_new = np.array([[X_team, Y_team, day_of_week, time, state]])
-attendance_prediction = reg.predict(X_new)
-print("Attendance prediction:", attendance_prediction[0])
+# # Obtener las constantes del modelo
+# intercept = reg.intercept_
+# coeffs = reg.coef_
+
+# # Explresar la ecuacion como un string
+# equation = "y = "
+# equation += str(intercept) + " + "
+# for i, coeff in enumerate(coeffs):
+#     equation += str(coeff) + " * X" + str(i) + " + "
+# equation = equation[:-3]
+# print("Equation:", equation)
+
+# # Predict the number of attendees given X and Y teams, day of the week, time, and state
+# # Predecir el numero de personas que atenderan al partido en base a X y Y equipos, dia de la semana, tiempo, y estado
+# X_new = np.array(
+#     [["New York Mets", "Philadelphia Phillies", "Sunday", "7:3p.m", "New York"]]
+# )
+# attendance_prediction = reg.predict(X_new)
+# print("Attendance prediction:", attendance_prediction[0])

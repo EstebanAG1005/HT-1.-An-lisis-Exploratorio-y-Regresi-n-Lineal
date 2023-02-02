@@ -2,25 +2,39 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def display_menu():
     print("Menu:")
-    print("1. Haga una exploración rápida de sus datos para eso haga un resumen de su dataset.")
-    print("2. Diga el tipo de cada una de las variables del dataset (cualitativa o categórica, cuantitativa continua, cuantitativa discreta)")
-    print("3. Incluya los gráficos exploratorios siendo consecuentes con el tipo de variable que están representando.")
-    print("4. Aísle las variables numéricas de las categóricas, haga un análisis de correlación entre las mismas.")
-    print("5. Utilice las variables categóricas, haga tablas de frecuencia, proporción, gráficas de barras o cualquier otra técnica que le permita explorar los datos.")
-    print("6. Realice la limpieza de variables utilizando las técnicas vistas en clase, u otras que piense pueden ser de utilidad")
+    print(
+        "1. Haga una exploración rápida de sus datos para eso haga un resumen de su dataset."
+    )
+    print(
+        "2. Diga el tipo de cada una de las variables del dataset (cualitativa o categórica, cuantitativa continua, cuantitativa discreta)"
+    )
+    print(
+        "3. Incluya los gráficos exploratorios siendo consecuentes con el tipo de variable que están representando."
+    )
+    print(
+        "4. Aísle las variables numéricas de las categóricas, haga un análisis de correlación entre las mismas."
+    )
+    print(
+        "5. Utilice las variables categóricas, haga tablas de frecuencia, proporción, gráficas de barras o cualquier otra técnica que le permita explorar los datos."
+    )
+    print(
+        "6. Realice la limpieza de variables utilizando las técnicas vistas en clase, u otras que piense pueden ser de utilidad"
+    )
     print("7. Salir")
+
 
 def main():
     while True:
         display_menu()
         opcion = int(input("Elija una opción: "))
-        
+
         if opcion == 1:
 
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Ver las primeras filas
             print(df.head())
@@ -33,10 +47,10 @@ def main():
 
             # Verificar valores faltantes
             print(df.isna().sum())
-        
+
         elif opcion == 2:
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Clasificar cada columna según su tipo de datos
             for col in df.columns:
@@ -51,13 +65,13 @@ def main():
         elif opcion == 3:
 
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Iterar sobre cada columna del dataset
             for column in df.columns:
                 # Determinar el tipo de variable de la columna
                 dtype = df[column].dtype
-                
+
                 if dtype == "object":
                     # Categórica: hacer un gráfico de barras o pastel
                     frequencies = df[column].value_counts()
@@ -76,13 +90,14 @@ def main():
                     plt.show()
                 else:
                     # Otro tipo de variable
-                    print("Column " + column + " has an unknown data type: " + str(dtype))
-
+                    print(
+                        "Column " + column + " has an unknown data type: " + str(dtype)
+                    )
 
         elif opcion == 4:
 
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Aislar las variables numéricas
             numeric_vars = df.select_dtypes(include=["float", "int"])
@@ -101,7 +116,7 @@ def main():
         elif opcion == 5:
 
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Encontrar todas las variables categóricas
             cat_vars = df.select_dtypes(include=["object"]).columns
@@ -123,25 +138,29 @@ def main():
                 plt.bar(freq.index, freq.values)
                 plt.xlabel("Valores de la variable")
                 plt.ylabel("Frecuencia")
-                plt.title(f"Gráfico de barra de frecuencia de la variable categórica {var}")
+                plt.title(
+                    f"Gráfico de barra de frecuencia de la variable categórica {var}"
+                )
                 plt.show()
 
                 # Hacer un gráfico de barra de la tabla de proporción
                 plt.bar(prop.index, prop.values)
                 plt.xlabel("Valores de la variable")
                 plt.ylabel("Proporción")
-                plt.title(f"Gráfico de barra de proporción de la variable categórica {var}")
+                plt.title(
+                    f"Gráfico de barra de proporción de la variable categórica {var}"
+                )
                 plt.show()
-            
+
         elif opcion == 6:
 
             # Importar el dataset
-            df = pd.read_csv("baseball_reference_2016_scrape.csv")
+            df = pd.read_csv("baseball.csv")
 
             # Eliminar filas con valores nulos
             df = df.dropna()
 
-            #Rellenar valores nulos con el valor promedio de la columna
+            # Rellenar valores nulos con el valor promedio de la columna
             for col in df.columns:
                 if df[col].dtype != "object":
                     df[col].fillna(df[col].mean(), inplace=True)
@@ -156,17 +175,16 @@ def main():
                 std = df[col].std()
 
                 # Truncar valores atípicos a 2 desviaciones estándar
-                df[col] = np.clip(df[col], mean - 2*std, mean + 2*std)
-            
-            # Guardar el dataset limpio en un archivo CSV nuevo
-            df.to_csv('dataset_limpio.csv', index=False)
+                df[col] = np.clip(df[col], mean - 2 * std, mean + 2 * std)
 
-        
+            # Guardar el dataset limpio en un archivo CSV nuevo
+            df.to_csv("dataset_limpio.csv", index=False)
+
         elif opcion == 7:
             break
         else:
             print("Opción inválida.")
 
+
 if __name__ == "__main__":
     main()
-
