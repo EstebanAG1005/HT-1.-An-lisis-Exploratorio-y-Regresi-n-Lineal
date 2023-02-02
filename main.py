@@ -108,13 +108,8 @@ for var in cat_vars:
 
 #1.6 Realice la limpieza de variables utilizando las técnicas vistas en clase, u otras que piense pueden ser de utilidad
 
-# Eliminar filas con valores nulos
-df = df.dropna()
-
-#Rellenar valores nulos con el valor promedio de la columna
-for col in df.columns:
-    if df[col].dtype != "object":
-        df[col].fillna(df[col].mean(), inplace=True)
+# Reemplazar los valores nulos con un 0
+df = df.fillna(0)
 
 # Seleccionar solo las columnas numéricas
 numeric_cols = df.select_dtypes(include=[np.number]).columns
