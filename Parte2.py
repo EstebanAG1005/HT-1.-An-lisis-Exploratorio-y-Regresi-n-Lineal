@@ -11,8 +11,11 @@ df["attendance"] = (
     df["attendance"].str.replace(",", "").str.replace("'", "").str.replace("]", "")
 )
 
+df["attendance"] = pd.to_numeric(df["attendance"], errors="coerce")
+df = df.dropna(subset=["attendance"])
+
 # Remove quotes from 'other_info_string' column
-df["other_info_string"] = df["other_info_string"].str.replace('"', "")
+df = df.drop("other_info_string", axis=1)
 
 # Remove quotes from 'other_info_string' column
 df["venue"] = df["venue"].str.replace(":", "")
@@ -20,42 +23,39 @@ df["venue"] = df["venue"].str.replace(":", "")
 # Remove quotes from 'start_time' column
 df["start_time"] = df["start_time"].str.replace('"', "")
 
-# Remove any remaining HTML tags
-df["other_info_string"] = df["other_info_string"].str.replace("<.*?>", "")
 
 print(df)
 
-df.to_csv("New.csv", index=False)
+df.to_csv("New1.csv", index=False)
 
+# Importamos el conjunto de datos
+X = df.iloc[:, :-1].values
+y = df.iloc[:, -1].values
 
-# # Importamos el conjunto de datos
-# X = df.iloc[:, :-1].values
-# y = df.iloc[:, -1].values
+# Ajustar el modelo de regresión lineal a los datos que tenemos
+reg = LinearRegression().fit(X, y)
 
-# # Ajustar el modelo de regresión lineal a los datos que tenemos
-# reg = LinearRegression().fit(X, y)
+# Calculo del parametro R2
+y_pred = reg.predict(X)
+r2 = r2_score(y, y_pred)
+print("R2 score:", r2)
 
-# # Calculo del parametro R2
-# y_pred = reg.predict(X)
-# r2 = r2_score(y, y_pred)
-# print("R2 score:", r2)
+# Obtener las constantes del modelo
+intercept = reg.intercept_
+coeffs = reg.coef_
 
-# # Obtener las constantes del modelo
-# intercept = reg.intercept_
-# coeffs = reg.coef_
+# Explresar la ecuacion como un string
+equation = "y = "
+equation += str(intercept) + " + "
+for i, coeff in enumerate(coeffs):
+    equation += str(coeff) + " * X" + str(i) + " + "
+equation = equation[:-3]
+print("Equation:", equation)
 
-# # Explresar la ecuacion como un string
-# equation = "y = "
-# equation += str(intercept) + " + "
-# for i, coeff in enumerate(coeffs):
-#     equation += str(coeff) + " * X" + str(i) + " + "
-# equation = equation[:-3]
-# print("Equation:", equation)
-
-# # Predict the number of attendees given X and Y teams, day of the week, time, and state
-# # Predecir el numero de personas que atenderan al partido en base a X y Y equipos, dia de la semana, tiempo, y estado
-# X_new = np.array(
-#     [["New York Mets", "Philadelphia Phillies", "Sunday", "7:3p.m", "New York"]]
-# )
-# attendance_prediction = reg.predict(X_new)
-# print("Attendance prediction:", attendance_prediction[0])
+# Predict the number of attendees given X and Y teams, day of the week, time, and state
+# Predecir el numero de personas que atenderan al partido en base a X y Y equipos, dia de la semana, tiempo, y estado
+X_new = np.array(
+    [["New York Mets", "Philadelphia Phillies", "Sunday", "7:3p.m", "New York"]]
+)
+attendance_prediction = reg.predict(X_new)
+print("Attendance prediction:", attendance_prediction[0])
