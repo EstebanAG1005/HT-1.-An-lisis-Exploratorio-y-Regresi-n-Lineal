@@ -2,35 +2,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def display_menu():
     print("Menu:")
-    print(
-        "1. Haga una exploración rápida de sus datos para eso haga un resumen de su dataset."
-    )
-    print(
-        "2. Diga el tipo de cada una de las variables del dataset (cualitativa o categórica, cuantitativa continua, cuantitativa discreta)"
-    )
-    print(
-        "3. Incluya los gráficos exploratorios siendo consecuentes con el tipo de variable que están representando."
-    )
-    print(
-        "4. Aísle las variables numéricas de las categóricas, haga un análisis de correlación entre las mismas."
-    )
-    print(
-        "5. Utilice las variables categóricas, haga tablas de frecuencia, proporción, gráficas de barras o cualquier otra técnica que le permita explorar los datos."
-    )
-    print(
-        "6. Realice la limpieza de variables utilizando las técnicas vistas en clase, u otras que piense pueden ser de utilidad"
-    )
+    print("1. Haga una exploración rápida de sus datos para eso haga un resumen de su dataset.")
+    print("2. Diga el tipo de cada una de las variables del dataset (cualitativa o categórica, cuantitativa continua, cuantitativa discreta)")
+    print("3. Incluya los gráficos exploratorios siendo consecuentes con el tipo de variable que están representando.")
+    print("4. Aísle las variables numéricas de las categóricas, haga un análisis de correlación entre las mismas.")
+    print("5. Utilice las variables categóricas, haga tablas de frecuencia, proporción, gráficas de barras o cualquier otra técnica que le permita explorar los datos.")
+    print("6. Realice la limpieza de variables utilizando las técnicas vistas en clase, u otras que piense pueden ser de utilidad")
     print("7. Salir")
-
 
 def main():
     while True:
         display_menu()
         opcion = int(input("Elija una opción: "))
-
+        
         if opcion == 1:
 
             # Importar el dataset
@@ -47,7 +33,7 @@ def main():
 
             # Verificar valores faltantes
             print(df.isna().sum())
-
+        
         elif opcion == 2:
             # Importar el dataset
             df = pd.read_csv("baseball.csv")
@@ -75,7 +61,10 @@ def main():
                 if dtype == "object":
                     # Categórica: hacer un gráfico de barras o pastel
                     frequencies = df[column].value_counts()
+                    if len(frequencies) > 15:
+                        frequencies = frequencies[:15]
                     frequencies.plot(kind="bar")
+                    plt.xticks(rotation=90)
                     plt.xlabel(column)
                     plt.ylabel("Frequency")
                     plt.title("Frequency of " + column)
@@ -90,9 +79,8 @@ def main():
                     plt.show()
                 else:
                     # Otro tipo de variable
-                    print(
-                        "Column " + column + " has an unknown data type: " + str(dtype)
-                    )
+                    print("Column " + column + " has an unknown data type: " + str(dtype))
+
 
         elif opcion == 4:
 
@@ -134,57 +122,70 @@ def main():
                 # Mostrar la tabla de proporción
                 print(prop)
 
+                # Verificar si hay más de 15 valores en la variable categórica
+                if len(freq) > 15:
+                    # Si hay más de 15 valores, mostrar solo los primeros 15 valores
+                    freq = freq[:15]
+                    prop = prop[:15]
+
                 # Hacer un gráfico de barra de la tabla de frecuencia
                 plt.bar(freq.index, freq.values)
                 plt.xlabel("Valores de la variable")
                 plt.ylabel("Frecuencia")
-                plt.title(
-                    f"Gráfico de barra de frecuencia de la variable categórica {var}"
-                )
+                plt.title(f"Gráfico de barra de frecuencia de la variable categórica {var}")
+                plt.xticks(rotation=90)
+                plt.tight_layout()
                 plt.show()
 
                 # Hacer un gráfico de barra de la tabla de proporción
                 plt.bar(prop.index, prop.values)
                 plt.xlabel("Valores de la variable")
                 plt.ylabel("Proporción")
-                plt.title(
-                    f"Gráfico de barra de proporción de la variable categórica {var}"
-                )
+                plt.title(f"Gráfico de barra de proporción de la variable categórica {var}")
+                plt.xticks(rotation=90)
+                plt.tight_layout()
                 plt.show()
 
+            
         elif opcion == 6:
-
-            # Importar el dataset
+            # Se carga la data
             df = pd.read_csv("baseball.csv")
 
-            # Eliminar filas con valores nulos
-            df = df.dropna()
+            # Remove comma from 'attendance' column
+            df["attendance"] = (
+                df["attendance"]
+                .str.replace(",", "", regex=False)
+                .str.replace("'", "", regex=False)
+                .str.replace("]", "", regex=False)
+            )
 
-            # Rellenar valores nulos con el valor promedio de la columna
-            for col in df.columns:
-                if df[col].dtype != "object":
-                    df[col].fillna(df[col].mean(), inplace=True)
 
-            # Seleccionar solo las columnas numéricas
-            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            df["attendance"] = pd.to_numeric(df["attendance"], errors="coerce")
+            df = df.dropna(subset=["attendance"])
 
-            # Iterar sobre las columnas numéricas
-            for col in numeric_cols:
-                # Calcular el promedio y la desviación estándar de la columna
-                mean = df[col].mean()
-                std = df[col].std()
+            # Remove quotes from 'other_info_string' column
+            df = df.drop("other_info_string", axis=1)
 
-                # Truncar valores atípicos a 2 desviaciones estándar
-                df[col] = np.clip(df[col], mean - 2 * std, mean + 2 * std)
+            # Remove quotes from 'other_info_string' column
+            df["venue"] = df["venue"].str.replace(":", "")
 
-            # Guardar el dataset limpio en un archivo CSV nuevo
-            df.to_csv("dataset_limpio.csv", index=False)
+            df["game_duration"] = df["game_duration"].str.replace(":", "")
+
+            # Remove quotes from 'start_time' column
+            df["start_time"] = df["start_time"].str.replace('"', "")
+
+
+            print(df)
+
+            # Guarda los cambios en un archivo csv
+            df.to_csv("New.csv", index=False)
+
 
         elif opcion == 7:
             break
         else:
             print("Opción inválida.")
 
-
 if __name__ == "__main__":
     main()
+
