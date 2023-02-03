@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
@@ -8,8 +9,12 @@ df = pd.read_csv("baseball.csv")
 
 # Remove comma from 'attendance' column
 df["attendance"] = (
-    df["attendance"].str.replace(",", "").str.replace("'", "").str.replace("]", "")
+    df["attendance"]
+    .str.replace(",", "", regex=False)
+    .str.replace("'", "", regex=False)
+    .str.replace("]", "", regex=False)
 )
+
 
 df["attendance"] = pd.to_numeric(df["attendance"], errors="coerce")
 df = df.dropna(subset=["attendance"])
@@ -20,6 +25,8 @@ df = df.drop("other_info_string", axis=1)
 # Remove quotes from 'other_info_string' column
 df["venue"] = df["venue"].str.replace(":", "")
 
+df["game_duration"] = df["game_duration"].str.replace(":", "")
+
 # Remove quotes from 'start_time' column
 df["start_time"] = df["start_time"].str.replace('"', "")
 
@@ -27,6 +34,9 @@ df["start_time"] = df["start_time"].str.replace('"', "")
 print(df)
 
 df.to_csv("New1.csv", index=False)
+
+# Apply Label Encoder to all string features
+df = df.apply(LabelEncoder().fit_transform)
 
 # Importamos el conjunto de datos
 X = df.iloc[:, :-1].values
@@ -54,8 +64,6 @@ print("Equation:", equation)
 
 # Predict the number of attendees given X and Y teams, day of the week, time, and state
 # Predecir el numero de personas que atenderan al partido en base a X y Y equipos, dia de la semana, tiempo, y estado
-X_new = np.array(
-    [["New York Mets", "Philadelphia Phillies", "Sunday", "7:3p.m", "New York"]]
-)
+X_new = np.array([[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 attendance_prediction = reg.predict(X_new)
 print("Attendance prediction:", attendance_prediction[0])
