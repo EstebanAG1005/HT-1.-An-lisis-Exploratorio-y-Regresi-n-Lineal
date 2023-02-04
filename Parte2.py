@@ -97,3 +97,43 @@ for i, c in enumerate(coeff):
 
 print("Coefficients:", coeff)
 print("Equation:", equation)
+
+
+# Test
+
+# data_to_predict = pd.DataFrame(
+#     {
+#         "home_team": ["New York Mets"],
+#         "away_team": ["San Francisco Giants"],
+#         "week_day": ["Sunday"],
+#         "start_time": ["7:38pm"],
+#         "game_type": ["Night Game"],
+#         "venue": ["Kauffman Stadium"],
+#         "year": [2016],
+#         "col7": [0],
+#         "col8": [0],
+#         "col9": [0],
+#         "col10": [0],
+#         "col11": [0],
+#         "col12": [0],
+#         "col13": [0],
+#         "col14": [0],
+#         "col15": [0],
+#         "col16": [0],
+#     }
+# )
+
+# # Apply LabelEncoder to the data to predict
+# data_to_predict = data_to_predict.apply(LabelEncoder().fit_transform)
+
+# # Adding the 'attendance_squared' feature
+# data_to_predict["attendance_squared"] = 0
+
+# # Converting the input data into a numpy array
+# X_to_predict = data_to_predict.iloc[:, :-1].values
+
+# # Using the model to make the prediction
+# attendance = reg.predict(X_to_predict)
+
+# # Displaying the predicted attendance
+# print("The predicted attendance for the game is:", int(attendance[0]))
