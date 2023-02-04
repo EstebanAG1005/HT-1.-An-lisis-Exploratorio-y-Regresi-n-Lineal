@@ -59,7 +59,7 @@ print(df)
 # profile = df.profile_report(title="Test")
 # profile.to_file(output_file="profiler.html")
 
-df.to_csv("New1.csv", index=False)
+df.to_csv("Cleaned_Data.csv", index=False)
 
 # Aplicar un labelEncoder
 df = df.apply(LabelEncoder().fit_transform)
