@@ -79,79 +79,21 @@ y_pred = reg.predict(X)
 r2 = r2_score(y, y_pred)
 print("R2 score:", r2)
 
-# Create dummies for the categorical variables
-df = pd.get_dummies(
-    df,
-    columns=[
-        "attendance",
-        "away_team",
-        "away_team_errors",
-        "away_team_hits",
-        "away_team_runs",
-        "date",
-        "game_duration",
-        "game_type",
-        "home_team",
-        "home_team_errors",
-        "home_team_hits",
-        "home_team_runs",
-        "start_time",
-        "venue",
-        "week_day",
-        "year",
-        "fiedl_type",
-    ],
-)
+# Getting the coefficients
+coeff = reg.coef_
 
-# Save the dataframe
-df.to_csv("dummy_dataset.csv", index=False)
+# Adding the constant term to the coefficients
+coeff = np.insert(coeff, 0, reg.intercept_)
 
-
-# Mostrat la ecuacion
-reg = LinearRegression().fit(X, y)
-coefficients = reg.coef_
-
-interception = reg.intercept_
+# Creating the equation
 equation = "y = "
-for i in range(len(coefficients)):
-    equation += str(coefficients[i]) + " * X" + str(i + 1) + " + "
-equation += str(interception)
-print(equation)
+for i, c in enumerate(coeff):
+    if i == 0:
+        equation += f"{c}"
+    elif c >= 0:
+        equation += f" + {c} * x_{i}"
+    else:
+        equation += f" - {abs(c)} * x_{i}"
 
-# Data to predict
-data_to_predict = pd.DataFrame(
-    {
-        "home_team": ["New York Mets"],
-        "away_team": ["San Francisco Giants"],
-        "week_day": ["Sunday"],
-        "start_time": ["7:38pm"],
-        "game_type": ["Night Game"],
-        "venue": ["Kauffman Stadium"],
-        "year": [2016],
-        "col7": [0],
-        "col8": [0],
-        "col9": [0],
-        "col10": [0],
-        "col11": [0],
-        "col12": [0],
-        "col13": [0],
-        "col14": [0],
-        "col15": [0],
-        "col16": [0],
-    }
-)
-
-# Apply LabelEncoder to the data to predict
-data_to_predict = data_to_predict.apply(LabelEncoder().fit_transform)
-
-# Adding the 'attendance_squared' feature
-data_to_predict["attendance_squared"] = 0
-
-# Converting the input data into a numpy array
-X_to_predict = data_to_predict.iloc[:, :-1].values
-
-# Using the model to make the prediction
-attendance = reg.predict(X_to_predict)
-
-# Displaying the predicted attendance
-print("The predicted attendance for the game is:", int(attendance[0]))
+print("Coefficients:", coeff)
+print("Equation:", equation)
